@@ -1,95 +1,94 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [items, setItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // Fetch items from API
+    fetch('/api/items')
+      .then(res => res.json())
+      .then(data => setItems(data.items))
+      .catch(err => console.error('Error fetching items:', err));
+  }, []);
+
+  const handleGeneratePDF = async () => {
+    if (!selectedItem) {
+      setMessage('Please select an item first');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ itemId: selectedItem }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage(data.message);
+      } else {
+        setMessage('Error: ' + data.error);
+      }
+    } catch (error) {
+      setMessage('Error generating PDF');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        <h1 className={styles.title}>PDF Generator</h1>
+        
+        <div className={styles.container}>
+          <div className={styles.formGroup}>
+            <label htmlFor="itemSelect" className={styles.label}>
+              Select an item:
+            </label>
+            <select
+              id="itemSelect"
+              value={selectedItem}
+              onChange={(e) => setSelectedItem(e.target.value)}
+              className={styles.select}
+            >
+              <option value="">Choose an item...</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name} - {item.description}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={handleGeneratePDF}
+            disabled={!selectedItem || loading}
+            className={styles.button}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+            {loading ? 'Generating PDF...' : 'Generate PDF'}
+          </button>
+
+          {message && (
+            <div className={styles.message}>
+              {message}
+            </div>
+          )}
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

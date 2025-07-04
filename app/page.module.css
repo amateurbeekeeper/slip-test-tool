@@ -166,3 +166,92 @@ a.secondary {
     filter: invert();
   }
 }
+
+/* New styles for PDF Generator */
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--foreground);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  background: var(--gray-alpha-100);
+  border-radius: 12px;
+  border: 1px solid var(--gray-alpha-200);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.select {
+  padding: 0.75rem;
+  border: 1px solid var(--gray-alpha-200);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--foreground);
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  background: var(--foreground);
+  color: var(--background);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--button-primary-hover);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.message {
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  background: var(--gray-alpha-100);
+  border: 1px solid var(--gray-alpha-200);
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .container {
+    padding: 1.5rem;
+  }
+}
